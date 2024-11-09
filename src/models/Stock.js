@@ -1,7 +1,5 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 import Product from './Product.js';
+import getDataFromFile from '../utils/getDataFromFile.js';
 
 class Stock {
   products;
@@ -11,7 +9,7 @@ class Stock {
   }
 
   loadProducts() {
-    const productLines = this.#readProductsFromFile();
+    const productLines = getDataFromFile('../../public/products.md');
 
     productLines.forEach((line) => {
       const product = this.#parseProductLine(line);
@@ -54,7 +52,27 @@ class Stock {
   }
 
   getProductsByName(name) {
-    return this.products.filter((product) => product.name === name);
+    return this.products.get(name);
+  }
+  getProductQuantity(name) {
+    const productInfo = this.getProductsByName(name);
+    let [base, promotion] = [0, 0];
+
+    if (productInfo.base) base = productInfo.base.quantity;
+    if (productInfo.promotion) promotion = productInfo.promotion.quantity;
+
+    return base + promotion;
+  }
+
+  reduceProductQuantity(name, quantity) {
+    const productInfo = this.getProductsByName(name);
+
+    if (productInfo) {
+      if (productInfo.promotion) productInfo.promotion.reduceQuantity(quantity);
+      if (productInfo.base) productInfo.base.reduceQuantity(quantity);
+    } else {
+      throw new Error('해당하는 상품이 없습니다.');
+    }
   }
 
   #fillEmptyBaseQuantities() {
@@ -68,19 +86,6 @@ class Stock {
         );
       }
     });
-  }
-
-  #readProductsFromFile() {
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
-    const filePath = path.resolve(__dirname, '../../public/products.md');
-
-    return fs
-      .readFileSync(filePath, 'utf-8')
-      .toString()
-      .trim()
-      .split('\n')
-      .slice(1);
   }
 
   #parseProductLine(line) {
