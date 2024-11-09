@@ -1,5 +1,12 @@
+import Cashier from './controllers/CashierController.js';
+
 class App {
-  async run() {}
+  constructor() {
+    this.cashier = new Cashier();
+  }
+  async run() {
+    this.cashier.start();
+  }
 }
 
 export default App;
