@@ -16,6 +16,20 @@ class InputView {
       return { name, quantity: Number(quantity) };
     });
   }
+
+  static async confirmStockAdjustment(availableQuantity) {
+    const input = await Console.readLineAsync(
+      `재고가 부족합니다. 남아있는 재고(${availableQuantity}개)만큼이라도 구매하시겠습니까? (Y/N)\n`,
+    );
+    return input;
+  }
+
+  static async confirmPromotionAddition(name, get) {
+    const input = await Console.readLineAsync(
+      `현재 ${name}은(는) ${get}개를 무료로 더 받을 수 있습니다. 추가하시겠습니까? (Y/N)\n`,
+    );
+    return input;
+  }
 }
 
 export default InputView;
