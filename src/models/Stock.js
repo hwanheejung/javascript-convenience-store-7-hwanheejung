@@ -2,12 +2,20 @@ import Product from './Product.js';
 import getDataFromFile from '../utils/getDataFromFile.js';
 
 class Stock {
+  /**
+   * 상품 데이터를 저장하는 Map 객체
+   * @type {Map<string, { base: Product|null, promotion: Product|null }>}
+   */
   products;
 
   constructor() {
     this.products = new Map();
   }
 
+  /**
+   * 파일에서 상품 정보를 불러와 products 맵을 초기화한다.
+   * @returns {void}
+   */
   loadProducts() {
     const productLines = getDataFromFile('../../public/products.md');
 
@@ -29,6 +37,10 @@ class Stock {
     this.#fillEmptyBaseQuantities();
   }
 
+  /**
+   * 모든 상품의 정보를 배열 형태로 반환한다.
+   * @returns {Array<Array<string|number|null>>} 상품 정보 배열
+   */
   getAllProducts() {
     const flattenedProducts = [];
     const addProductToFlattened = (name, product) => {
@@ -51,10 +63,20 @@ class Stock {
     return flattenedProducts;
   }
 
+  /**
+   * 특정 상품의 기본 및 프로모션 재고 정보를 반환한다.
+   * @param {string} name - 상품명
+   * @returns {{ base: Product|null, promotion: Product|null }} 기본 및 프로모션 재고 정보
+   */
   getProductsByName(name) {
     return this.products.get(name);
   }
 
+  /**
+   * 특정 상품의 기본 재고, 프로모션 재고, 전체 수량을 반환한다.
+   * @param {string} name - 상품명
+   * @returns {{ base: number, promotion: number, all: number }} 재고 정보
+   */
   getProductQuantity(name) {
     const productInfo = this.getProductsByName(name);
     let [base, promotion] = [0, 0];
@@ -65,6 +87,13 @@ class Stock {
     return { base, promotion, all: base + promotion };
   }
 
+  /**
+   * 특정 상품의 기본 및 프로모션 수량을 감소시킨다.
+   * @param {string} name - 상품명
+   * @param {number} promoQuantity - 프로모션 수량 감소분
+   * @param {number} baseQuantity - 기본 수량 감소분
+   * @returns {void}
+   */
   reduceProductQuantity(name, promoQuantity, baseQuantity) {
     const productInfo = this.getProductsByName(name);
 
