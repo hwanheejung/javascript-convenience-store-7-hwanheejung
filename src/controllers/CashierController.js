@@ -1,4 +1,3 @@
-import { Console } from '@woowacourse/mission-utils';
 import calculateQuantities from '../utils/calculateQuantities.js';
 import InputView from '../views/InputView.js';
 import OutputView from '../views/OutputView.js';
@@ -19,8 +18,7 @@ class Cashier {
     const membershipDiscount =
       await this.getMembershipDiscount(adjustedProducts);
 
-    this.receipt.generateReceiptData(adjustedProducts, membershipDiscount);
-    // this.receipt.printReceipt();
+    this.receipt.printReceipt(adjustedProducts, membershipDiscount);
   }
 
   displayAvailableProducts() {

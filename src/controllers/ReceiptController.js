@@ -1,4 +1,5 @@
 import { Console } from '@woowacourse/mission-utils';
+import OutputView from '../views/OutputView.js';
 
 class Receipt {
   /**
@@ -21,14 +22,17 @@ class Receipt {
     };
   }
 
-  printReceipt() {}
+  printReceipt(products, membershipDiscount) {
+    this.#generateReceiptData(products, membershipDiscount);
+    OutputView.receipt(this.receiptData);
+  }
 
   /**
    * 영수증 데이터를 생성한다.
    * @param {Array<{ name: string, promoQuantity: number, baseQuantity: number, price: number, buy: number, get: number }>} products - 구매한 상품 리스트
    * @param {number} membershipDiscount - 멤버십 할인 금액
    */
-  generateReceiptData(products, membershipDiscount) {
+  #generateReceiptData(products, membershipDiscount) {
     const items = this.#generateItems(products);
     const freeItems = this.#generateFreeItems(products);
 
