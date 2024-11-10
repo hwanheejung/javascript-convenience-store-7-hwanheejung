@@ -42,19 +42,14 @@ const calculatePromoQuantity = (quantity, promoStock, buy, get) => {
 
 const calculateBaseQuantity = async (quantity, name, promoQuantity) => {
   if (quantity - promoQuantity === 0) return 0;
-  const answer = await InputView.confirmBasePurchase(
-    name,
-    quantity - promoQuantity,
-  );
+  const answer = await InputView.confirmBase(name, quantity - promoQuantity);
   if (answer === 'Y') return quantity - promoQuantity;
   return 0;
 };
 
 const handleExcessStock = async (quantity, promoStock, baseStock) => {
   if (quantity > promoStock + baseStock) {
-    const answer = await InputView.confirmStockAdjustment(
-      promoStock + baseStock,
-    );
+    const answer = await InputView.confirmStock(promoStock + baseStock);
     if (answer === 'Y') return promoStock + baseStock;
     return 0;
   }
@@ -71,7 +66,7 @@ const handleAdditionalPromotion = async (
   const isPromotionAvailable =
     quantity % (buy + get) === buy && quantity + get <= promoStock;
   if (isPromotionAvailable) {
-    const answer = await InputView.confirmAddGet(name, get);
+    const answer = await InputView.confirmPromo(name, get);
     if (answer === 'Y') return quantity + get;
   }
   return quantity;

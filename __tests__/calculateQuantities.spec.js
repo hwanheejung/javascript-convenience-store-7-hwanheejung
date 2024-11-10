@@ -20,11 +20,9 @@ describe('utils/calculateQuantities()', () => {
     expectedPromo,
     expectedBase,
   }) => {
-    if (confirmStock)
-      InputView.confirmStockAdjustment.mockResolvedValue(confirmStock);
-    if (confirmPromo) InputView.confirmAddGet.mockResolvedValue(confirmPromo);
-    if (confirmBase)
-      InputView.confirmBasePurchase.mockResolvedValue(confirmBase);
+    if (confirmStock) InputView.confirmStock.mockResolvedValue(confirmStock);
+    if (confirmPromo) InputView.confirmPromo.mockResolvedValue(confirmPromo);
+    if (confirmBase) InputView.confirmBase.mockResolvedValue(confirmBase);
 
     const result = await calculateQuantities(
       '콜라',
