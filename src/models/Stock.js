@@ -54,6 +54,7 @@ class Stock {
   getProductsByName(name) {
     return this.products.get(name);
   }
+
   getProductQuantity(name) {
     const productInfo = this.getProductsByName(name);
     let [base, promotion] = [0, 0];
@@ -61,7 +62,7 @@ class Stock {
     if (productInfo.base) base = productInfo.base.quantity;
     if (productInfo.promotion) promotion = productInfo.promotion.quantity;
 
-    return base + promotion;
+    return { base, promotion, all: base + promotion };
   }
 
   reduceProductQuantity(name, quantity) {

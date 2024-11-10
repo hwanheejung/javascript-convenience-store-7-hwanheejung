@@ -11,7 +11,7 @@ class Cashier {
 
   async start() {
     this.displayAvailableProducts();
-    const productsToBuy = await this.askForProducts();
+    const productsToBuy = await InputView.productsToBuy();
     const adjustedProducts = await this.adjustProductQuantities(productsToBuy);
 
     Console.print(adjustedProducts);
@@ -24,11 +24,6 @@ class Cashier {
     OutputView.availableProducts(products);
   }
 
-  async askForProducts() {
-    const productsToBuy = await InputView.productsToBuy();
-    return productsToBuy;
-  }
-
   /**
    *
    * @param {Array<{ name: string, quantity: number }>} productsToBuy
@@ -39,19 +34,10 @@ class Cashier {
 
     for (const { name, quantity } of productsToBuy) {
       const product = this.stock.getProductsByName(name);
+      const { base: baseStock, promotion: promoStock } =
+        this.stock.getProductQuantity(name);
 
-      const promoStock = product['promotion']?.quantity || 0;
-      const baseStock = product['base']?.quantity || 0;
-
-      let [buy, get] = [0, 0];
-      const promotionName = product['promotion']?.promotion;
-
-      if (promotionName) {
-        const promotion = this.promotionList.getPromotionByName(promotionName);
-        const promotionDetails = promotion?.getDetails();
-        buy = promotionDetails?.buy || 0;
-        get = promotionDetails?.get || 0;
-      }
+      const { buy, get } = this.#getProductBuyGet(product);
 
       const { promoQuantity, baseQuantity } = await calculateQuantities(
         name,
@@ -66,6 +52,20 @@ class Cashier {
     }
 
     return adjustedProducts;
+  }
+
+  #getProductBuyGet(product) {
+    let [buy, get] = [0, 0];
+    const promotionName = product['promotion']?.promotion;
+
+    if (promotionName) {
+      const promotion = this.promotionList.getPromotionByName(promotionName);
+      const promotionDetails = promotion?.getDetails();
+      buy = promotionDetails?.buy || 0;
+      get = promotionDetails?.get || 0;
+    }
+
+    return { buy, get };
   }
 
   askForMembership() {}
