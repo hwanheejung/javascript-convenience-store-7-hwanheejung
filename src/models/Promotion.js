@@ -13,7 +13,7 @@ class Promotion {
     return currentDate >= this.startDate && currentDate <= this.endDate;
   }
 
-  getPromotionDetails() {
+  getDetails() {
     return {
       buy: this.buy,
       get: this.get,
