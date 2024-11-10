@@ -5,6 +5,10 @@ class Product {
     this.quantity = quantity;
     this.promotion = promotion;
   }
+
+  reduceQuantity(quantity) {
+    this.quantity -= quantity;
+  }
 }
 
 export default Product;

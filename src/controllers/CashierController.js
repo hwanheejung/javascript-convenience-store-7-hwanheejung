@@ -48,7 +48,8 @@ class Cashier {
         get,
       );
       adjustedProducts.push({ name, promoQuantity, baseQuantity });
-      // this.stock.reduceProductQuantity(name, promoQuantity, baseQuantity);
+
+      this.stock.reduceProductQuantity(name, promoQuantity, baseQuantity);
     }
 
     return adjustedProducts;

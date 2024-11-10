@@ -65,15 +65,12 @@ class Stock {
     return { base, promotion, all: base + promotion };
   }
 
-  reduceProductQuantity(name, quantity) {
+  reduceProductQuantity(name, promoQuantity, baseQuantity) {
     const productInfo = this.getProductsByName(name);
 
-    if (productInfo) {
-      if (productInfo.promotion) productInfo.promotion.reduceQuantity(quantity);
-      if (productInfo.base) productInfo.base.reduceQuantity(quantity);
-    } else {
-      throw new Error('해당하는 상품이 없습니다.');
-    }
+    if (productInfo['promotion'])
+      productInfo['promotion'].reduceQuantity(promoQuantity);
+    if (productInfo['base']) productInfo['base'].reduceQuantity(baseQuantity);
   }
 
   #fillEmptyBaseQuantities() {
