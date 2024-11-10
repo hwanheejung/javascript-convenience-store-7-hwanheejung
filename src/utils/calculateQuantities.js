@@ -8,37 +8,49 @@ const calculateQuantities = async (
   buy,
   get,
 ) => {
-  quantity = await confirmPurchaseUpToStock(quantity, promoStock, baseStock);
+  quantity = await handleExcessStock(quantity, promoStock, baseStock);
   if (quantity === 0) return { baseQuantity: 0, promoQuantity: 0 };
+  if (!buy && !get) return { baseQuantity: quantity, promoQuantity: 0 };
+  quantity = await handleAdditionalPromotion(
+    name,
+    quantity,
+    buy,
+    get,
+    promoStock,
+  );
+  const promoQuantity = calculatePromoQuantity(quantity, promoStock, buy, get);
+  const baseQuantity = await calculateBaseQuantity(
+    quantity,
+    name,
+    promoQuantity,
+  );
 
-  if (!buy && !get) {
-    return { baseQuantity: quantity, promoQuantity: 0 };
-  }
+  return { baseQuantity, promoQuantity };
+};
 
-  if (quantity % (buy + get) === buy) {
-    quantity = await confirmPromotionAddition(name, quantity, get, promoStock);
-  }
+const calculatePromoQuantity = (quantity, promoStock, buy, get) => {
   let defaultBaseQuantity = 0;
   if (quantity > promoStock) defaultBaseQuantity = quantity - promoStock;
 
-  let promoQuantity =
+  const promoQuantity =
     quantity -
     defaultBaseQuantity -
     ((quantity - defaultBaseQuantity) % (buy + get));
 
-  if (quantity - promoQuantity === 0) {
-    return { baseQuantity: 0, promoQuantity };
-  }
+  return promoQuantity;
+};
+
+const calculateBaseQuantity = async (quantity, name, promoQuantity) => {
+  if (quantity - promoQuantity === 0) return 0;
   const answer = await InputView.confirmBasePurchase(
     name,
     quantity - promoQuantity,
   );
-  if (answer === 'Y')
-    return { baseQuantity: quantity - promoQuantity, promoQuantity };
-  return { baseQuantity: 0, promoQuantity };
+  if (answer === 'Y') return quantity - promoQuantity;
+  return 0;
 };
 
-const confirmPurchaseUpToStock = async (quantity, promoStock, baseStock) => {
+const handleExcessStock = async (quantity, promoStock, baseStock) => {
   if (quantity > promoStock + baseStock) {
     const answer = await InputView.confirmStockAdjustment(
       promoStock + baseStock,
@@ -49,8 +61,16 @@ const confirmPurchaseUpToStock = async (quantity, promoStock, baseStock) => {
   return quantity;
 };
 
-const confirmPromotionAddition = async (name, quantity, get, promoStock) => {
-  if (quantity + get <= promoStock) {
+const handleAdditionalPromotion = async (
+  name,
+  quantity,
+  buy,
+  get,
+  promoStock,
+) => {
+  const isPromotionAvailable =
+    quantity % (buy + get) === buy && quantity + get <= promoStock;
+  if (isPromotionAvailable) {
     const answer = await InputView.confirmAddGet(name, get);
     if (answer === 'Y') return quantity + get;
   }
