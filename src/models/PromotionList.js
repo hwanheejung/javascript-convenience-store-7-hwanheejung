@@ -21,7 +21,9 @@ class PromotionList {
 
     promotionLines.forEach((line) => {
       const promotion = this.#parsePromotionLine(line);
-      this.promotions.set(promotion.name, promotion);
+      const { isActive } = promotion.getDetails();
+
+      if (isActive) this.promotions.set(promotion.name, promotion);
     });
   }
 
