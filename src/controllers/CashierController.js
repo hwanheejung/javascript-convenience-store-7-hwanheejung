@@ -2,21 +2,25 @@ import { Console } from '@woowacourse/mission-utils';
 import calculateQuantities from '../utils/calculateQuantities.js';
 import InputView from '../views/InputView.js';
 import OutputView from '../views/OutputView.js';
+import Receipt from './ReceiptController.js';
+import calculateMembership from '../utils/calculateMembership.js';
 
 class Cashier {
   constructor(stock, promotionList) {
     this.stock = stock;
     this.promotionList = promotionList;
+    this.receipt = new Receipt();
   }
 
   async start() {
     this.displayAvailableProducts();
     const productsToBuy = await InputView.productsToBuy();
     const adjustedProducts = await this.adjustProductQuantities(productsToBuy);
+    const membershipDiscount =
+      await this.getMembershipDiscount(adjustedProducts);
 
-    Console.print(adjustedProducts);
-
-    // this.askForMembership();
+    this.receipt.generateReceiptData(adjustedProducts, membershipDiscount);
+    // this.receipt.printReceipt();
   }
 
   displayAvailableProducts() {
@@ -27,7 +31,7 @@ class Cashier {
   /**
    *
    * @param {Array<{ name: string, quantity: number }>} productsToBuy
-   * @returns {Array<{ name: string, promoQuantity: number, baseQuantity: number }>}
+   * @returns {Array<{ name: string, promoQuantity: number, baseQuantity: number, price: number, buy: number, get: number }>}
    */
   async adjustProductQuantities(productsToBuy) {
     const adjustedProducts = [];
@@ -47,7 +51,15 @@ class Cashier {
         buy,
         get,
       );
-      adjustedProducts.push({ name, promoQuantity, baseQuantity });
+      const price = product['base'].price;
+      adjustedProducts.push({
+        name,
+        promoQuantity,
+        baseQuantity,
+        price,
+        buy,
+        get,
+      });
 
       this.stock.reduceProductQuantity(name, promoQuantity, baseQuantity);
     }
@@ -69,7 +81,25 @@ class Cashier {
     return { buy, get };
   }
 
-  askForMembership() {}
+  /**
+   *
+   * @param {Array<{ name: string, promoQuantity: number, baseQuantity: number, price: number }>}products
+   * @returns {number}
+   */
+  async getMembershipDiscount(products) {
+    let membershipDiscount = 0;
+    const amount = products.reduce(
+      (acc, { price, promoQuantity, baseQuantity }) =>
+        acc + price * (promoQuantity + baseQuantity),
+      0,
+    );
+
+    const answer = await InputView.askForMembership();
+    if (answer === 'Y') {
+      membershipDiscount = calculateMembership(amount);
+    }
+    return membershipDiscount;
+  }
 }
 
 export default Cashier;
