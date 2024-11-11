@@ -12,22 +12,39 @@ class Cashier {
   }
 
   async start() {
-    while (true) {
-      this.displayAvailableProducts();
-      const productsToBuy = await this.askProductsToBuy();
-      const adjustedProducts =
-        await this.adjustProductQuantities(productsToBuy);
-      const membershipDiscount =
-        await this.getMembershipDiscount(adjustedProducts);
+    await this.#processPurchase();
+    OutputView.goodBye();
+  }
 
-      this.receipt.printReceipt(adjustedProducts, membershipDiscount);
+  async #processPurchase() {
+    this.displayAvailableProducts();
+    const adjustedProducts = await this.#getAdjustedProducts();
+    const membershipDiscount =
+      await this.#applyMembershipDiscount(adjustedProducts);
 
-      const answer = await InputView.askForStartAgain();
-      if (answer === 'N') {
-        OutputView.goodBye();
-        break;
-      }
+    this.#printReceipt(adjustedProducts, membershipDiscount);
+
+    if (await this.#confirmRestart()) {
+      await this.#processPurchase();
     }
+  }
+
+  async #getAdjustedProducts() {
+    const productsToBuy = await this.askProductsToBuy();
+    return await this.adjustProductQuantities(productsToBuy);
+  }
+
+  async #applyMembershipDiscount(adjustedProducts) {
+    return await this.getMembershipDiscount(adjustedProducts);
+  }
+
+  #printReceipt(adjustedProducts, membershipDiscount) {
+    this.receipt.printReceipt(adjustedProducts, membershipDiscount);
+  }
+
+  async #confirmRestart() {
+    const answer = await InputView.askForStartAgain();
+    return answer !== 'N';
   }
 
   displayAvailableProducts() {
@@ -59,9 +76,7 @@ class Cashier {
       const product = this.stock.getProductsByName(name);
       const { base: baseStock, promotion: promoStock } =
         this.stock.getProductQuantity(name);
-
       const { buy, get } = this.#getProductBuyGet(product);
-
       const { promoQuantity, baseQuantity } = await calculateQuantities(
         name,
         quantity,
@@ -79,10 +94,8 @@ class Cashier {
         buy,
         get,
       });
-
       this.stock.reduceProductQuantity(name, promoQuantity, baseQuantity);
     }
-
     return adjustedProducts;
   }
 
@@ -112,11 +125,8 @@ class Cashier {
         acc + price * (promoQuantity + baseQuantity),
       0,
     );
-
     const answer = await InputView.askForMembership();
-    if (answer === 'Y') {
-      membershipDiscount = calculateMembership(amount);
-    }
+    if (answer === 'Y') membershipDiscount = calculateMembership(amount);
     return membershipDiscount;
   }
 }

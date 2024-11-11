@@ -9,20 +9,16 @@ export const yesOrNoValidator = (input) => {
 
 export const productsValidator = (input, stock) => {
   const products = input.trim().split(',');
-
   for (let product of products) {
     if (!validateFormat(product)) return null;
-
     const [name, quantity] = product
       .replace('[', '')
       .replace(']', '')
       .split('-');
     if (!validateExistence(name, stock)) return null;
-
     const { all: availableQuantity } = stock.getProductQuantity(name);
     if (!validateQuantity(quantity, availableQuantity)) return null;
   }
-
   return products;
 };
 

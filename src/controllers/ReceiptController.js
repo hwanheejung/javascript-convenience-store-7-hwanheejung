@@ -34,10 +34,8 @@ class Receipt {
   #generateReceiptData(products, membershipDiscount) {
     const items = this.#generateItems(products);
     const freeItems = this.#generateFreeItems(products);
-
     const totalPrice = this.#calculateTotalPrice(items);
     const promotionDiscount = this.#calculatePromotionDiscount(products);
-
     const finalPrice = this.#calculateFinalPrice(
       totalPrice,
       promotionDiscount,

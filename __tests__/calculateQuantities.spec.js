@@ -3,7 +3,7 @@ import InputView from '../src/views/InputView.js';
 
 jest.mock('../src/views/InputView');
 
-describe('utils/calculateQuantities()', () => {
+describe('utils/calculateQuantities', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });

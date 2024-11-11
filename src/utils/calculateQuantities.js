@@ -50,18 +50,12 @@ const calculateBaseQuantity = async (
 ) => {
   let baseQuantity = quantity - promoQuantity;
   if (baseQuantity === 0) return 0;
-
-  if (quantity > promoStock) {
-    const answer = await InputView.confirmBase(name, baseQuantity);
-    if (answer === 'Y') {
-      if (baseQuantity > baseStock) {
-        const answer = await InputView.confirmExcessBaseStock(baseStock);
-        if (answer === 'Y') return baseStock;
-        return 0;
-      }
-      return baseQuantity;
-    }
-    return 0;
+  if (quantity <= promoStock) return baseQuantity;
+  const answer = await InputView.confirmBase(name, baseQuantity);
+  if (answer !== 'Y') return 0;
+  if (baseQuantity > baseStock) {
+    const excessAnswer = await InputView.confirmExcessBaseStock(baseStock);
+    return excessAnswer === 'Y' ? baseStock : 0;
   }
   return baseQuantity;
 };
