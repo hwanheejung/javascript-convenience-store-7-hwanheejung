@@ -1,15 +1,16 @@
-import Receipt from '../../src/controllers/ReceiptController.js';
-import PromotionList from '../../src/models/PromotionList.js';
-import Stock from '../../src/models/Stock.js';
-import OutputView from '../../src/views/OutputView.js';
-import InputView from '../../src/views/InputView.js';
-import CashierService from '../../src/services/CashierService.js';
 import Cashier from '../../src/controllers/CashierController.js';
+import PromotionList from '../../src/models/PromotionList.js';
+import Receipt from '../../src/models/Receipt.js';
+import Stock from '../../src/models/Stock.js';
+import CashierService from '../../src/services/CashierService.js';
+import InputView from '../../src/views/InputView.js';
+import OutputView from '../../src/views/OutputView.js';
 
 jest.mock('../../src/services/CashierService.js');
 jest.mock('../../src/views/InputView.js');
 jest.mock('../../src/views/OutputView.js');
-jest.mock('../../src/controllers/ReceiptController.js');
+jest.mock('../../src/services/ReceiptService.js');
+jest.mock('../../src/models/Receipt.js');
 
 describe('Cashier', () => {
   let stockMock, promotionListMock, cashier, serviceMock, receiptMock;
