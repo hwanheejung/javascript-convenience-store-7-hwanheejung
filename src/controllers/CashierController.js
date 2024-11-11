@@ -18,33 +18,14 @@ class Cashier {
 
   async #processPurchase() {
     this.displayAvailableProducts();
-    const adjustedProducts = await this.#getAdjustedProducts();
+    const productsToBuy = await this.#collectProductsToBuy();
+    const adjustedProducts = await this.#adjustProductQuantities(productsToBuy);
     const membershipDiscount =
-      await this.#applyMembershipDiscount(adjustedProducts);
+      await this.#calculateMembershipDiscount(adjustedProducts);
 
     this.#printReceipt(adjustedProducts, membershipDiscount);
 
-    if (await this.#confirmRestart()) {
-      await this.#processPurchase();
-    }
-  }
-
-  async #getAdjustedProducts() {
-    const productsToBuy = await this.askProductsToBuy();
-    return await this.adjustProductQuantities(productsToBuy);
-  }
-
-  async #applyMembershipDiscount(adjustedProducts) {
-    return await this.getMembershipDiscount(adjustedProducts);
-  }
-
-  #printReceipt(adjustedProducts, membershipDiscount) {
-    this.receipt.printReceipt(adjustedProducts, membershipDiscount);
-  }
-
-  async #confirmRestart() {
-    const answer = await InputView.askForStartAgain();
-    return answer !== 'N';
+    if (await this.#confirmRestart()) await this.#processPurchase();
   }
 
   displayAvailableProducts() {
@@ -52,9 +33,8 @@ class Cashier {
     OutputView.availableProducts(products);
   }
 
-  async askProductsToBuy() {
+  async #collectProductsToBuy() {
     const input = await InputView.productsToBuy(this.stock);
-
     return input.map((product) => {
       const [name, quantity] = product
         .replace('[', '')
@@ -64,70 +44,74 @@ class Cashier {
     });
   }
 
-  /**
-   *
-   * @param {Array<{ name: string, quantity: number }>} productsToBuy
-   * @returns {Array<{ name: string, promoQuantity: number, baseQuantity: number, price: number, buy: number, get: number }>}
-   */
-  async adjustProductQuantities(productsToBuy) {
+  async #adjustProductQuantities(productsToBuy) {
     const adjustedProducts = [];
 
     for (const { name, quantity } of productsToBuy) {
-      const product = this.stock.getProductsByName(name);
-      const { base: baseStock, promotion: promoStock } =
-        this.stock.getProductQuantity(name);
-      const { buy, get } = this.#getProductBuyGet(product);
-      const { promoQuantity, baseQuantity } = await calculateQuantities(
+      const adjustedProduct = await this.#getAdjustedProduct(name, quantity);
+      adjustedProducts.push(adjustedProduct);
+      this.stock.reduceProductQuantity(
         name,
-        quantity,
-        promoStock,
-        baseStock,
-        buy,
-        get,
+        adjustedProduct.promoQuantity,
+        adjustedProduct.baseQuantity,
       );
-      const price = product['base'].price;
-      adjustedProducts.push({
-        name,
-        promoQuantity,
-        baseQuantity,
-        price,
-        buy,
-        get,
-      });
-      this.stock.reduceProductQuantity(name, promoQuantity, baseQuantity);
     }
+
     return adjustedProducts;
   }
 
-  #getProductBuyGet(product) {
-    let [buy, get] = [0, 0];
-    const promotionName = product['promotion']?.promotion;
+  async #getAdjustedProduct(name, quantity) {
+    const product = this.stock.getProductsByName(name);
+    const { base: baseStock, promotion: promoStock } =
+      this.stock.getProductQuantity(name);
+    const { buy, get } = this.#getProductBuyGet(product);
+    const { promoQuantity, baseQuantity } = await calculateQuantities(
+      name,
+      quantity,
+      promoStock,
+      baseStock,
+      buy,
+      get,
+    );
+    const price = product['base'].price;
 
-    if (promotionName) {
-      const promotion = this.promotionList.getPromotionByName(promotionName);
-      const promotionDetails = promotion?.getDetails();
-      buy = promotionDetails?.buy || 0;
-      get = promotionDetails?.get || 0;
-    }
-
-    return { buy, get };
+    return { name, promoQuantity, baseQuantity, price, buy, get };
   }
 
-  /**
-   *
-   * @param {Array<{ name: string, promoQuantity: number, baseQuantity: number, price: number }>}products
-   * @returns {number}
-   */
-  async getMembershipDiscount(products) {
-    let membershipDiscount = 0;
-    const amount = products.reduce(
+  #getProductBuyGet(product) {
+    const promotionName = product['promotion']?.promotion;
+    if (!promotionName) return { buy: 0, get: 0 };
+
+    const promotion = this.promotionList.getPromotionByName(promotionName);
+    const promotionDetails = promotion?.getDetails();
+
+    return {
+      buy: promotionDetails?.buy || 0,
+      get: promotionDetails?.get || 0,
+    };
+  }
+
+  async #calculateMembershipDiscount(products) {
+    const amount = this.#calculateTotalAmount(products);
+    const answer = await InputView.askForMembership();
+    return answer === 'Y' ? calculateMembership(amount) : 0;
+  }
+
+  #calculateTotalAmount(products) {
+    return products.reduce(
       (acc, { price, promoQuantity, baseQuantity }) =>
         acc + price * (promoQuantity + baseQuantity),
       0,
     );
-    const answer = await InputView.askForMembership();
-    if (answer === 'Y') membershipDiscount = calculateMembership(amount);
-    return membershipDiscount;
+  }
+
+  #printReceipt(adjustedProducts, membershipDiscount) {
+    this.receipt.printReceipt(adjustedProducts, membershipDiscount);
+  }
+
+  async #confirmRestart() {
+    const answer = await InputView.askForStartAgain();
+    return answer !== 'N';
   }
 }
 

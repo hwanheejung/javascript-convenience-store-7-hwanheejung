@@ -1,7 +1,7 @@
 import calculateQuantities from '../../src/utils/calculateQuantities.js';
 import InputView from '../../src/views/InputView.js';
 
-jest.mock('../src/views/InputView');
+jest.mock('../../src/views/InputView');
 
 describe('utils/calculateQuantities', () => {
   beforeEach(() => {
