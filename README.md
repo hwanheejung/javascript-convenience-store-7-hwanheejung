@@ -94,53 +94,50 @@ Stock과 PromotionList 클래스를 사용해 재고 확인, 결제 금액 계�
 - `getPromotionByName(name: string): Promotion`
   - 주어진 이름의 프로모션 객체를 반환
 
+### 📍 Receipt (model)
+
+영수증 데이터를 생성하고 출력하는 역할
+
+> `service (ReceiptService)`: 영수증 데이터 생성을 담당하는 서비스 클래스 인스턴스
+> `receiptData (Object)`: 생성된 영수증 데이터를 저장하는 객체
+
+- `printReceipt(products: Array, membershipDiscount: number): void`
+
+  - ReceiptService의 generateReceiptData 메서드를 호출하여 products와 membershipDiscount를 바탕으로 영수증 데이터를 생성하고 receiptData에 저장한다.
+  - 생성된 receiptData를 OutputView를 통해 출력하여 영수증 정보를 사용자에게 보여준다.
+
 <br/>
 <br/>
 
 # 최종 구매 수량 계산 로직
 
-### 1. 재고 초과 확인 (`handleExcessStock`)
+### 1. 수량이 0인지 확인:
 
-- 조건: `quantity > promoStock + baseStock`
-- 설명: 구매하려는 수량이 전체 재고(promoStock+baseStock)보다 큰 경우 재고 부족을 사용자에게 알린다.
-- 사용자 행동:
-  - `Y`: 재고만큼 구매 (quantity = promoStock + baseStock)
-  - `N`: 구매 취소 (quantity = 0)
+- quantity가 0이면 { baseQuantity: 0, promoQuantity: 0 }을 반환
 
-### 2. 프로모션 미적용 처리
+### 2. 프로모션 조건 확인:
 
-- 조건: 프로모션이 없는 경우 buy, get이 0
-- 설명: 프로모션이 없을 경우, 모든 수량을 baseQuantity로 처리하고, promoQuantity는 0으로 처리한다.
+- buy와 get 조건이 없는 경우 { baseQuantity: quantity, promoQuantity: 0 }을 반환
+- 즉, 프로모션 없이 기본 수량으로만 계산한다
 
-### 3. 추가 프로모션 적용 확인 (`handleAdditionalPromotion`)
+### 3. 추가 프로모션 처리 (handleAdditionalPromotion):
 
-- 조건: `quantity % (buy + get) === buy`와 `quantity + get <= promoStock`
-- 설명: 예를 들어 2+1인데 2개만 가져온 경우이며 동시에 1개를 추가해도 재고 부족이 아닐 경우, 사용자에게 추가 프로모션을 적용할지 확인한다. 또는, 2+1일 때 3개를 가져온 경우, 자동으로 프로모션이 적용된다.
-- 사용자 행동:
-  - `Y`: 추가 프로모션 적용 (quantity = quantity + get)
-  - `N`: 기존 수량으로 유지 (quantity = quantity)
+- handleAdditionalPromotion 함수를 통해 추가 프로모션이 가능한지 확인하고, 추가 수량을 결정한다.
+- 사용자가 프로모션을 적용하기로 선택하면, quantity에 get 수량이 추가된다.
 
-### 4. 재고 부족 시 기본 수량 설정
+### 4. 프로모션 수량 계산 (calculatePromoQuantity):
 
-- 조건: `quantity > promoStock`
-- 설명: 프로모션 재고가 부족한 경우, 부족한 부분을 baseQuantity로 충당하기 위해 기본 수량(defaultBaseQuantity)를 설정한다.
-- 결과: defaultBaseQuantity = quantity - promoStock / 재고가 충분하면 defaultBaseQuantity = 0
+- calculatePromoQuantity 함수를 사용하여 최종 프로모션 수량을 계산한다.
+- quantity와 promoStock, buy, get 조건을 기반으로 프로모션 상품 수량을 계산하여 promoQuantity를 얻는다.
 
-### 5. 최종 promoQuantity, baseQuantity 계산
+### 5. 기본 수량 계산 (calculateBaseQuantity):
 
-- 계산식:
+- calculateBaseQuantity 함수: 최종적인 기본 수량을 결정하는 함수
+- promoQuantity를 제외한 나머지 수량이 기본 수량 (baseQuantity)이 됨.
+  - 사용자 확인 절차:
+    - 만약 기본 수량이 promoStock보다 크다면, InputView.confirmBase로 사용자에게 확인을 요청하여 'Y' 응답 시에만 기본 수량을 유지
+    - 또한 기본 수량이 baseStock보다 많은 경우, InputView.confirmExcessBaseStock을 호출해 추가 수량을 허용할지 사용자에게 물어보고, 'Y' 응답 시 baseStock으로 제한
 
-```javascript
-const promoQuantity =
-  quantity -
-  defaultBaseQuantity -
-  ((quantity - defaultBaseQuantity) % (buy + get));
-const baseQuantity = quantity - promoQuantity;
-```
+### 6. 결과 반환:
 
-- 설명: 프로모션 수량을 계산하고, 남은 수량을 정가로 구매할지 확인한다.
-- 사용자 행동:
-  - `quantity - promoQuanity === 0`: baseQ = 0 (남은 수량이 없으므로 정가 구매는 없음)
-  - `quantity - promoQuantity > 0`: 남은 수량을 정가로 구매할지 확인
-    - `Y`: baseQuantity = quantity - promoQuantity
-    - `N`: baseQuantity = 0
+- 최종적으로 { baseQuantity, promoQuantity } 객체를 반환하여 기본 수량과 프로모션 수량을 함께 제공합니다.
