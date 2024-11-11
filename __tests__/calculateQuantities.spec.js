@@ -42,7 +42,7 @@ describe('utils/calculateQuantities()', () => {
     it.each`
       quantity | promoStock | baseStock | buy  | get  | confirmStock | confirmPromo | confirmBase | expectedPromo | expectedBase
       ${2}     | ${0}       | ${2}      | ${0} | ${0} | ${null}      | ${null}      | ${null}     | ${0}          | ${2}
-      ${3}     | ${0}       | ${2}      | ${0} | ${0} | ${'Y'}       | ${null}      | ${null}     | ${0}          | ${2}
+      ${3}     | ${0}       | ${2}      | ${0} | ${0} | ${2}         | ${null}      | ${null}     | ${0}          | ${2}
     `(
       'should calculate quantities with quantity=$quantity, buy=$buy, get=$get',
       async (params) => await testCalculateQuantities(params),
@@ -63,8 +63,8 @@ describe('utils/calculateQuantities()', () => {
       ${6}     | ${6}       | ${2}      | ${2} | ${1} | ${null}      | ${null}      | ${null}     | ${6}          | ${0}
       ${7}     | ${6}       | ${2}      | ${2} | ${1} | ${null}      | ${null}      | ${'Y'}      | ${6}          | ${1}
       ${8}     | ${6}       | ${2}      | ${2} | ${1} | ${null}      | ${null}      | ${'Y'}      | ${6}          | ${2}
-      ${9}     | ${6}       | ${2}      | ${2} | ${1} | ${'Y'}       | ${null}      | ${'Y'}      | ${6}          | ${2}
-      ${10}    | ${6}       | ${2}      | ${2} | ${1} | ${'Y'}       | ${null}      | ${'Y'}      | ${6}          | ${2}
+      ${9}     | ${6}       | ${2}      | ${2} | ${1} | ${8}         | ${null}      | ${'Y'}      | ${6}          | ${2}
+      ${10}    | ${6}       | ${2}      | ${2} | ${1} | ${8}         | ${null}      | ${'Y'}      | ${6}          | ${2}
     `(
       'should calculate quantities with quantity=$quantity, buy=$buy, get=$get',
       async (params) => await testCalculateQuantities(params),

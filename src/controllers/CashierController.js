@@ -1,8 +1,8 @@
+import calculateMembership from '../utils/calculateMembership.js';
 import calculateQuantities from '../utils/calculateQuantities.js';
 import InputView from '../views/InputView.js';
 import OutputView from '../views/OutputView.js';
 import Receipt from './ReceiptController.js';
-import calculateMembership from '../utils/calculateMembership.js';
 
 class Cashier {
   constructor(stock, promotionList) {
@@ -13,7 +13,7 @@ class Cashier {
 
   async start() {
     this.displayAvailableProducts();
-    const productsToBuy = await InputView.productsToBuy();
+    const productsToBuy = await this.askProductsToBuy();
     const adjustedProducts = await this.adjustProductQuantities(productsToBuy);
     const membershipDiscount =
       await this.getMembershipDiscount(adjustedProducts);
@@ -24,6 +24,18 @@ class Cashier {
   displayAvailableProducts() {
     const products = this.stock.getAllProducts();
     OutputView.availableProducts(products);
+  }
+
+  async askProductsToBuy() {
+    const input = await InputView.productsToBuy(this.stock);
+
+    return input.map((product) => {
+      const [name, quantity] = product
+        .replace('[', '')
+        .replace(']', '')
+        .split('-');
+      return { name, quantity: Number(quantity) };
+    });
   }
 
   /**

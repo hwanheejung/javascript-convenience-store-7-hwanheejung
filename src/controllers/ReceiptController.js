@@ -1,4 +1,3 @@
-import { Console } from '@woowacourse/mission-utils';
 import OutputView from '../views/OutputView.js';
 
 class Receipt {
@@ -53,8 +52,6 @@ class Receipt {
       finalPrice,
       freeItems,
     };
-
-    Console.print(this.receiptData);
   }
 
   #generateItems(products) {
@@ -66,10 +63,7 @@ class Receipt {
   }
 
   #calculateTotalPrice(products) {
-    return products.reduce(
-      (acc, { price, quantity }) => acc + price * quantity,
-      0,
-    );
+    return products.reduce((acc, { price }) => acc + price, 0);
   }
   #calculatePromotionDiscount(products) {
     return products.reduce((acc, { price, promoQuantity, buy, get }) => {
@@ -81,6 +75,7 @@ class Receipt {
       return acc + price * freeQuantity;
     }, 0);
   }
+
   #calculateFinalPrice(totalPrice, promotionDiscount, membershipDiscount) {
     return totalPrice - promotionDiscount - membershipDiscount;
   }
@@ -97,7 +92,10 @@ class Receipt {
       });
   }
   #calculateFreeItemsQuantity(promoQuantity, buy, get) {
-    return promoQuantity / (buy + get);
+    if (promoQuantity === 0 || buy + get === 0) {
+      return 0;
+    }
+    return Math.floor(promoQuantity / (buy + get));
   }
 }
 

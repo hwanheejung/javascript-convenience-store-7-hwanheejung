@@ -1,5 +1,6 @@
 import { Console } from '@woowacourse/mission-utils';
 import { PROMPT } from '../constants/messages.js';
+import commaizeNumber from '../utils/commaizeNumber.js';
 
 class OutputView {
   static availableProducts(products) {
@@ -10,7 +11,9 @@ class OutputView {
       const quantityText = quantity > 0 ? `${quantity}개` : '재고 없음';
       const promotionText = promotion ? promotion : '';
 
-      Console.print(`- ${name} ${price}원 ${quantityText} ${promotionText}`);
+      Console.print(
+        `- ${name} ${commaizeNumber(price)}원 ${quantityText} ${promotionText}`,
+      );
     });
   }
 
@@ -20,7 +23,7 @@ class OutputView {
 
     // 구매 항목 출력
     receiptData.items.forEach(({ name, quantity, price }) => {
-      Console.print(`${name}\t\t${quantity}\t${price.toLocaleString()}원`);
+      Console.print(`${name}\t\t${quantity}\t${commaizeNumber(price)}원`);
     });
 
     // 증정 항목 출력
@@ -31,14 +34,14 @@ class OutputView {
     Console.print('====================================');
 
     // 요약 정보 출력
-    Console.print(`총구매액\t\t${receiptData.totalPrice.toLocaleString()}원`);
+    Console.print(`총구매액\t\t${commaizeNumber(receiptData.totalPrice)}원`);
     Console.print(
-      `행사할인\t\t-${receiptData.promotionDiscount.toLocaleString()}원`,
+      `행사할인\t\t-${commaizeNumber(receiptData.promotionDiscount)}원`,
     );
     Console.print(
-      `멤버십할인\t\t-${receiptData.membershipDiscount.toLocaleString()}원`,
+      `멤버십할인\t\t-${commaizeNumber(receiptData.membershipDiscount)}원`,
     );
-    Console.print(`내실돈\t\t${receiptData.finalPrice.toLocaleString()}원`);
+    Console.print(`내실돈\t\t${commaizeNumber(receiptData.finalPrice)}원`);
   }
 }
 
