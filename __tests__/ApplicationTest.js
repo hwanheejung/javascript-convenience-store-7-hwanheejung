@@ -1,6 +1,7 @@
 import App from '../src/App.js';
 import { MissionUtils } from '@woowacourse/mission-utils';
 import { EOL as LINE_SEPARATOR } from 'os';
+import { ERROR } from '../src/constants/messages.js';
 
 const mockQuestions = async (inputs) => {
   const messages = [];
@@ -107,11 +108,11 @@ describe('편의점', () => {
 
   test('파일에 있는 상품 목록 출력', async () => {
     await run({
-      inputs: ['[콜라-1]', 'N', 'N'],
+      inputs: ['[콜라-1]', 'Y', 'N', 'N'],
       expected: [
         /* prettier-ignore */
-        "- 콜라 1,000원 7개 탄산2+1",
-        '- 콜라 1,000원 1개',
+        "- 콜라 1,000원 10개 탄산2+1",
+        '- 콜라 1,000원 10개',
         '- 사이다 1,000원 8개 탄산2+1',
         '- 사이다 1,000원 7개',
         '- 오렌지주스 1,800원 9개 MD추천상품',
@@ -152,8 +153,7 @@ describe('편의점', () => {
     await runExceptions({
       inputs: ['[컵라면-12]', 'N', 'N'],
       inputsToTerminate: INPUTS_TO_TERMINATE,
-      expectedErrorMessage:
-        '[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.',
+      expectedErrorMessage: ERROR.EXCEEDS_STOCK_QUANTITY,
     });
   });
 });
