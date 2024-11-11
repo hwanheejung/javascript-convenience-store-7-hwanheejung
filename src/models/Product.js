@@ -4,12 +4,6 @@ class Product {
   /** @type {number} */ quantity;
   /** @type {string|null} */ promotion;
 
-  /**
-   * @param {string} name - 상품명
-   * @param {number} price - 상품 가격
-   * @param {number} quantity - 재고 수량
-   * @param {string|null} [promotion=null] - 프로모션 정보
-   */
   constructor(name, price, quantity, promotion = null) {
     this.name = name;
     this.price = price;
