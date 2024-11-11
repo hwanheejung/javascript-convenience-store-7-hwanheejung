@@ -1,7 +1,7 @@
+import Receipt from '../models/Receipt.js';
 import CashierService from '../services/CashierService.js';
 import InputView from '../views/InputView.js';
 import OutputView from '../views/OutputView.js';
-import Receipt from './ReceiptController.js';
 
 class Cashier {
   /** @type {Stock} */ stock;

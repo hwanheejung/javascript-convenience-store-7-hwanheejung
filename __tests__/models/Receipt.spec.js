@@ -1,4 +1,4 @@
-import Receipt from '../../src/controllers/ReceiptController.js';
+import Receipt from '../../src/models/Receipt.js';
 import OutputView from '../../src/views/OutputView.js';
 
 jest.mock('../../src/views/OutputView.js');
@@ -14,7 +14,7 @@ describe('Receipt', () => {
     jest.clearAllMocks();
   });
 
-  describe('printReceipt', () => {
+  describe('printReceipt()', () => {
     it('should generate receiptData correctly and call OutputView.receipt', () => {
       const products = [
         {
