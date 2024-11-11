@@ -3,7 +3,7 @@ import OutputView from '../../src/views/OutputView.js';
 
 jest.mock('../../src/views/OutputView.js');
 
-describe('Receipt', () => {
+describe('models/Receipt', () => {
   let receipt;
 
   beforeEach(() => {

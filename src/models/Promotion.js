@@ -7,13 +7,6 @@ class Promotion {
   /** @type {Date} */ startDate;
   /** @type {Date} */ endDate;
 
-  /**
-   * @param {string} name - 프로모션 이름
-   * @param {number} buy - 프로모션 적용을 위한 최소 구매 수량
-   * @param {number} get - 프로모션으로 추가로 제공되는 수량
-   * @param {string} startDate - 프로모션 시작일 (YYYY-MM-DD 형식)
-   * @param {string} endDate - 프로모션 종료일 (YYYY-MM-DD 형식)
-   */
   constructor(name, buy, get, startDate, endDate) {
     this.name = name;
     this.buy = buy;
