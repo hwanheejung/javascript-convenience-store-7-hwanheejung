@@ -13,7 +13,7 @@ class App {
     this.promotionList.loadPromotions();
 
     const cashier = new Cashier(this.stock, this.promotionList);
-    cashier.start();
+    await cashier.start();
   }
 }
 
