@@ -12,13 +12,22 @@ class Cashier {
   }
 
   async start() {
-    this.displayAvailableProducts();
-    const productsToBuy = await this.askProductsToBuy();
-    const adjustedProducts = await this.adjustProductQuantities(productsToBuy);
-    const membershipDiscount =
-      await this.getMembershipDiscount(adjustedProducts);
+    while (true) {
+      this.displayAvailableProducts();
+      const productsToBuy = await this.askProductsToBuy();
+      const adjustedProducts =
+        await this.adjustProductQuantities(productsToBuy);
+      const membershipDiscount =
+        await this.getMembershipDiscount(adjustedProducts);
 
-    this.receipt.printReceipt(adjustedProducts, membershipDiscount);
+      this.receipt.printReceipt(adjustedProducts, membershipDiscount);
+
+      const answer = await InputView.askForStartAgain();
+      if (answer === 'N') {
+        OutputView.goodBye();
+        break;
+      }
+    }
   }
 
   displayAvailableProducts() {

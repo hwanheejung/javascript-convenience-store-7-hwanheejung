@@ -43,6 +43,10 @@ class OutputView {
     );
     Console.print(`내실돈\t\t${commaizeNumber(receiptData.finalPrice)}원`);
   }
+
+  static goodBye() {
+    Console.print(PROMPT.GOODBYE);
+  }
 }
 
 export default OutputView;
