@@ -1,7 +1,7 @@
 import Product from '../../src/models/Product.js';
 import Stock from '../../src/models/Stock.js';
 
-describe('Stock', () => {
+describe('models/Stock', () => {
   let stock;
 
   beforeEach(() => {

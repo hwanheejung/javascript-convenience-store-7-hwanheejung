@@ -29,7 +29,7 @@ class PromotionList {
    * @returns {Promotion} 지정된 이름의 Promotion 객체
    */
   getPromotionByName(name) {
-    return this.promotions.get(name);
+    return this.promotions.get(name) || null;
   }
 
   #parsePromotionLine(line) {
