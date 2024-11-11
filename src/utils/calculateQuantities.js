@@ -55,7 +55,8 @@ const calculateBaseQuantity = async (
   if (answer !== 'Y') return 0;
   if (baseQuantity > baseStock) {
     const excessAnswer = await InputView.confirmExcessBaseStock(baseStock);
-    return excessAnswer === 'Y' ? baseStock : 0;
+    if (excessAnswer === 'Y') return baseStock;
+    return 0;
   }
   return baseQuantity;
 };

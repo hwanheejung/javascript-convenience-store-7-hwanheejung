@@ -98,7 +98,8 @@ class Cashier {
   async #calculateMembershipDiscount(products) {
     const amount = this.#calculateTotalAmount(products);
     const answer = await InputView.askForMembership();
-    return answer === 'Y' ? calculateMembership(amount) : 0;
+    if (answer === 'Y') return calculateMembership(amount);
+    return 0;
   }
 
   #calculateTotalAmount(products) {

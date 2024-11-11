@@ -113,11 +113,15 @@ class Stock {
 
   #parseProductLine(line) {
     const [name, price, quantity, promotion] = line.split(',');
+
+    let parsedPromotion = promotion;
+    if (promotion === 'null') parsedPromotion = null;
+
     return new Product(
       name,
       parseInt(price, 10),
       parseInt(quantity, 10),
-      promotion === 'null' ? null : promotion,
+      parsedPromotion,
     );
   }
 }

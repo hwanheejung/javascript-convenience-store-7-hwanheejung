@@ -8,8 +8,12 @@ class OutputView {
 
     products.forEach((product) => {
       const [name, price, quantity, promotion] = product;
-      const quantityText = quantity > 0 ? `${quantity}개` : '재고 없음';
-      const promotionText = promotion ? promotion : '';
+
+      let quantityText = '재고 없음';
+      if (quantity > 0) quantityText = `${quantity}개`;
+
+      let promotionText = '';
+      if (promotion) promotionText = promotion;
 
       Console.print(
         `- ${name} ${commaizeNumber(price)}원 ${quantityText} ${promotionText}`,
