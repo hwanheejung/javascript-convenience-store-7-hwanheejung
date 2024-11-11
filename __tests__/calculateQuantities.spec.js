@@ -1,5 +1,5 @@
-import calculateQuantities from '../src/utils/calculateQuantities';
-import InputView from '../src/views/InputView';
+import calculateQuantities from '../src/utils/calculateQuantities.js';
+import InputView from '../src/views/InputView.js';
 
 jest.mock('../src/views/InputView');
 
