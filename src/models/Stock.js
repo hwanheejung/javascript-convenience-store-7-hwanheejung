@@ -75,6 +75,8 @@ class Stock {
    */
   getProductQuantity(name) {
     const productInfo = this.getProductsByName(name);
+    if (!productInfo) return { base: 0, promotion: 0, all: 0 };
+
     let [base, promotion] = [0, 0];
 
     if (productInfo.base) base = productInfo.base.quantity;
