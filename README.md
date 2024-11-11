@@ -140,4 +140,4 @@ Stock과 PromotionList 클래스를 사용해 재고 확인, 결제 금액 계�
 
 ### 6. 결과 반환:
 
-- 최종적으로 { baseQuantity, promoQuantity } 객체를 반환하여 기본 수량과 프로모션 수량을 함께 제공합니다.
+- 최종적으로 { baseQuantity, promoQuantity } 객체를 반환하여 기본 수량과 프로모션 수량을 함께 제공

@@ -18,16 +18,16 @@ class Stock {
     productLines.forEach((line) => {
       const product = this.#parseProductLine(line);
 
-      if (!this.products.has(product.name)) {
+      if (!this.products.has(product.name))
         this.products.set(product.name, { base: null, promotion: null });
-      }
 
       const productInfo = this.products.get(product.name);
       if (product.promotion) {
         productInfo.promotion = product;
-      } else {
-        productInfo.base = product;
+        return;
       }
+
+      productInfo.base = product;
     });
 
     this.#fillEmptyBaseQuantities();
