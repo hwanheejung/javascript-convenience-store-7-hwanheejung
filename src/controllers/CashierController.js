@@ -1,5 +1,4 @@
-import calculateMembership from '../utils/calculateMembership.js';
-import calculateQuantities from '../utils/calculateQuantities.js';
+import CashierService from '../services/CashierService.js';
 import InputView from '../views/InputView.js';
 import OutputView from '../views/OutputView.js';
 import Receipt from './ReceiptController.js';
@@ -8,11 +7,13 @@ class Cashier {
   /** @type {Stock} */ stock;
   /** @type {PromotionList} */ promotionList;
   /** @type {Receipt} */ receipt;
+  /** @type {CashierService} */ service;
 
   constructor(stock, promotionList) {
     this.stock = stock;
     this.promotionList = promotionList;
     this.receipt = new Receipt();
+    this.service = new CashierService(stock, promotionList);
   }
 
   async start() {
@@ -22,14 +23,15 @@ class Cashier {
 
   async #processPurchase() {
     this.displayAvailableProducts();
-    const productsToBuy = await this.#collectProductsToBuy();
-    const adjustedProducts = await this.#adjustProductQuantities(productsToBuy);
+    const productsToBuy = await this.collectProductsToBuy();
+    const adjustedProducts =
+      await this.service.getAdjustedProducts(productsToBuy);
     const membershipDiscount =
-      await this.#calculateMembershipDiscount(adjustedProducts);
+      await this.calculateMembershipDiscount(adjustedProducts);
 
-    this.#printReceipt(adjustedProducts, membershipDiscount);
+    this.printReceipt(adjustedProducts, membershipDiscount);
 
-    if (await this.#confirmRestart()) await this.#processPurchase();
+    if (await this.confirmRestart()) await this.#processPurchase();
   }
 
   displayAvailableProducts() {
@@ -37,7 +39,7 @@ class Cashier {
     OutputView.availableProducts(products);
   }
 
-  async #collectProductsToBuy() {
+  async collectProductsToBuy() {
     const input = await InputView.productsToBuy(this.stock);
     return input.map((product) => {
       const [name, quantity] = product
@@ -48,73 +50,19 @@ class Cashier {
     });
   }
 
-  async #adjustProductQuantities(productsToBuy) {
-    const adjustedProducts = [];
-
-    for (const { name, quantity } of productsToBuy) {
-      const adjustedProduct = await this.#getAdjustedProduct(name, quantity);
-      adjustedProducts.push(adjustedProduct);
-      this.stock.reduceProductQuantity(
-        name,
-        adjustedProduct.promoQuantity,
-        adjustedProduct.baseQuantity,
-      );
-    }
-
-    return adjustedProducts;
-  }
-
-  async #getAdjustedProduct(name, quantity) {
-    const product = this.stock.getProductsByName(name);
-    const { base: baseStock, promotion: promoStock } =
-      this.stock.getProductQuantity(name);
-    const { buy, get } = this.#getProductBuyGet(product);
-    const { promoQuantity, baseQuantity } = await calculateQuantities(
-      name,
-      quantity,
-      promoStock,
-      baseStock,
-      buy,
-      get,
-    );
-    const price = product['base'].price;
-
-    return { name, promoQuantity, baseQuantity, price, buy, get };
-  }
-
-  #getProductBuyGet(product) {
-    const promotionName = product['promotion']?.promotion;
-    if (!promotionName) return { buy: 0, get: 0 };
-
-    const promotion = this.promotionList.getPromotionByName(promotionName);
-    const promotionDetails = promotion?.getDetails();
-
-    return {
-      buy: promotionDetails?.buy || 0,
-      get: promotionDetails?.get || 0,
-    };
-  }
-
-  async #calculateMembershipDiscount(products) {
-    const amount = this.#calculateTotalAmount(products);
+  async calculateMembershipDiscount(adjustedProducts) {
+    const amount =
+      await this.service.calculateMembershipDiscount(adjustedProducts);
     const answer = await InputView.askForMembership();
-    if (answer === 'Y') return calculateMembership(amount);
+    if (answer === 'Y') return amount;
     return 0;
   }
 
-  #calculateTotalAmount(products) {
-    return products.reduce(
-      (acc, { price, promoQuantity, baseQuantity }) =>
-        acc + price * (promoQuantity + baseQuantity),
-      0,
-    );
-  }
-
-  #printReceipt(adjustedProducts, membershipDiscount) {
+  printReceipt(adjustedProducts, membershipDiscount) {
     this.receipt.printReceipt(adjustedProducts, membershipDiscount);
   }
 
-  async #confirmRestart() {
+  async confirmRestart() {
     const answer = await InputView.askForStartAgain();
     return answer !== 'N';
   }
