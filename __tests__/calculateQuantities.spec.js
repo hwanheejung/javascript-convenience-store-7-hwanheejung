@@ -54,10 +54,9 @@ describe('utils/calculateQuantities()', () => {
   describe('2+1 promotion', () => {
     it.each`
       quantity | promoStock | baseStock | buy  | get  | confirmExcessBaseStock | confirmPromo | confirmBase | expectedPromo | expectedBase
-      ${1}     | ${6}       | ${2}      | ${2} | ${1} | ${null}                | ${null}      | ${'Y'}      | ${0}          | ${1}
-      ${1}     | ${6}       | ${2}      | ${2} | ${1} | ${null}                | ${null}      | ${'N'}      | ${0}          | ${0}
+      ${1}     | ${6}       | ${2}      | ${2} | ${1} | ${null}                | ${null}      | ${null}     | ${0}          | ${1}
       ${2}     | ${6}       | ${2}      | ${2} | ${1} | ${null}                | ${'Y'}       | ${null}     | ${3}          | ${0}
-      ${2}     | ${6}       | ${2}      | ${2} | ${1} | ${null}                | ${'N'}       | ${'Y'}      | ${0}          | ${2}
+      ${2}     | ${6}       | ${2}      | ${2} | ${1} | ${null}                | ${'N'}       | ${null}     | ${0}          | ${2}
       ${3}     | ${6}       | ${2}      | ${2} | ${1} | ${null}                | ${null}      | ${null}     | ${3}          | ${0}
       ${4}     | ${6}       | ${2}      | ${2} | ${1} | ${null}                | ${null}      | ${'Y'}      | ${3}          | ${1}
       ${5}     | ${6}       | ${2}      | ${2} | ${1} | ${null}                | ${'Y'}       | ${null}     | ${6}          | ${0}

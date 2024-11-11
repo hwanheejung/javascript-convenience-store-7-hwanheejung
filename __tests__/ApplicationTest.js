@@ -106,7 +106,7 @@ describe('편의점', () => {
 
   test('파일에 있는 상품 목록 출력', async () => {
     await run({
-      inputs: ['[콜라-1]', 'Y', 'N', 'N'],
+      inputs: ['[콜라-1]', 'N', 'N'],
       expected: [
         /* prettier-ignore */
         "- 콜라 1,000원 10개 탄산2+1",
