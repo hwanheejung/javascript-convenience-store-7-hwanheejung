@@ -8,7 +8,6 @@ const calculateQuantities = async (
   buy,
   get,
 ) => {
-  quantity = await handleExcessStock(quantity, promoStock, baseStock);
   if (quantity === 0) return { baseQuantity: 0, promoQuantity: 0 };
   if (!buy && !get) return { baseQuantity: quantity, promoQuantity: 0 };
   quantity = await handleAdditionalPromotion(
@@ -23,6 +22,7 @@ const calculateQuantities = async (
     quantity,
     name,
     promoQuantity,
+    baseStock,
   );
 
   return { baseQuantity, promoQuantity };
@@ -40,26 +40,23 @@ const calculatePromoQuantity = (quantity, promoStock, buy, get) => {
   return promoQuantity;
 };
 
-const calculateBaseQuantity = async (quantity, name, promoQuantity) => {
-  if (quantity - promoQuantity === 0) return 0;
-  const answer = await InputView.confirmBase(name, quantity - promoQuantity);
-  if (answer === 'Y') return quantity - promoQuantity;
-  return 0;
-};
+const calculateBaseQuantity = async (
+  quantity,
+  name,
+  promoQuantity,
+  baseStock,
+) => {
+  let baseQuantity = quantity - promoQuantity;
+  if (baseQuantity === 0) return 0;
 
-const handleExcessStock = async (quantity, promoStock, baseStock) => {
-  const availableQuantity = promoStock + baseStock;
-  if (quantity > availableQuantity) {
-    const validQuantity = await InputView.confirmStock(availableQuantity);
-    return validQuantity;
+  const answer = await InputView.confirmBase(name, baseQuantity);
+  if (baseQuantity > baseStock) {
+    const answer = await InputView.confirmExcessBaseStock(baseStock);
+    if (answer === 'Y') return baseStock;
+    return 0;
   }
-  return quantity;
-  // if (quantity > promoStock + baseStock) {
-  //   const answer = await InputView.confirmStock(promoStock + baseStock);
-  //   if (answer === 'Y') return promoStock + baseStock;
-  //   return 0;
-  // }
-  // return quantity;
+  if (answer === 'Y') return baseQuantity;
+  return 0;
 };
 
 const handleAdditionalPromotion = async (

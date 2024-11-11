@@ -1,9 +1,8 @@
-import { Console } from '@woowacourse/mission-utils';
-import promptUntilValid from '../utils/promptUntilValid.js';
 import {
   productsValidator,
   yesOrNoValidator,
 } from '../utils/inputValidator.js';
+import promptUntilValid from '../utils/promptUntilValid.js';
 
 class InputView {
   static async productsToBuy(stock) {
@@ -13,18 +12,10 @@ class InputView {
     );
   }
 
-  static async confirmStock(availableQuantity) {
-    const validator = (input) => {
-      if (Number(input) <= availableQuantity) return input;
-      Console.print(
-        '[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.',
-      );
-      return null;
-    };
-
+  static async confirmExcessBaseStock(availableQuantity) {
     return promptUntilValid(
-      validator,
-      `현재 재고(${availableQuantity}개) 이내의 수량을 입력해 주세요.\n`,
+      yesOrNoValidator,
+      `기본 상품의 재고가 부족합니다. 남아있는 재고(${availableQuantity}개)만큼이라도 구매하시겠습니까? (Y/N)\n`,
     );
   }
 

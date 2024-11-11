@@ -9,7 +9,6 @@ const mockQuestions = async (inputs) => {
     messages.push(prompt);
     const input = inputs.shift();
 
-    console.log('input', input);
     if (input === undefined) {
       throw new Error('NO INPUT');
     }
@@ -33,7 +32,6 @@ const getLogSpy = () => {
 };
 
 const getOutput = (logSpy) => {
-  console.log('=== logSpy.mock.calls:', logSpy.mock.calls);
   return [...logSpy.mock.calls].join(LINE_SEPARATOR);
 };
 
@@ -112,8 +110,8 @@ describe('편의점', () => {
       inputs: ['[콜라-1]', 'N', 'N'],
       expected: [
         /* prettier-ignore */
-        "- 콜라 1,000원 10개 탄산2+1",
-        '- 콜라 1,000원 10개',
+        "- 콜라 1,000원 7개 탄산2+1",
+        '- 콜라 1,000원 1개',
         '- 사이다 1,000원 8개 탄산2+1',
         '- 사이다 1,000원 7개',
         '- 오렌지주스 1,800원 9개 MD추천상품',
@@ -150,12 +148,12 @@ describe('편의점', () => {
     });
   });
 
-  // test('예외 테스트', async () => {
-  //   await runExceptions({
-  //     inputs: ['[컵라면-12]', 'N', 'N'],
-  //     inputsToTerminate: INPUTS_TO_TERMINATE,
-  //     expectedErrorMessage:
-  //       '[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.',
-  //   });
-  // });
+  test('예외 테스트', async () => {
+    await runExceptions({
+      inputs: ['[컵라면-12]', 'N', 'N'],
+      inputsToTerminate: INPUTS_TO_TERMINATE,
+      expectedErrorMessage:
+        '[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.',
+    });
+  });
 });

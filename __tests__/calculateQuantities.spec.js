@@ -14,13 +14,16 @@ describe('utils/calculateQuantities()', () => {
     baseStock,
     buy,
     get,
-    confirmStock,
+    confirmExcessBaseStock,
     confirmPromo,
     confirmBase,
     expectedPromo,
     expectedBase,
   }) => {
-    if (confirmStock) InputView.confirmStock.mockResolvedValue(confirmStock);
+    if (confirmExcessBaseStock)
+      InputView.confirmExcessBaseStock.mockResolvedValue(
+        confirmExcessBaseStock,
+      );
     if (confirmPromo) InputView.confirmPromo.mockResolvedValue(confirmPromo);
     if (confirmBase) InputView.confirmBase.mockResolvedValue(confirmBase);
 
@@ -40,9 +43,8 @@ describe('utils/calculateQuantities()', () => {
 
   describe('no promotion', () => {
     it.each`
-      quantity | promoStock | baseStock | buy  | get  | confirmStock | confirmPromo | confirmBase | expectedPromo | expectedBase
-      ${2}     | ${0}       | ${2}      | ${0} | ${0} | ${null}      | ${null}      | ${null}     | ${0}          | ${2}
-      ${3}     | ${0}       | ${2}      | ${0} | ${0} | ${2}         | ${null}      | ${null}     | ${0}          | ${2}
+      quantity | promoStock | baseStock | buy  | get  | confirmExcessBaseStock | confirmPromo | confirmBase | expectedPromo | expectedBase
+      ${2}     | ${0}       | ${2}      | ${0} | ${0} | ${null}                | ${null}      | ${null}     | ${0}          | ${2}
     `(
       'should calculate quantities with quantity=$quantity, buy=$buy, get=$get',
       async (params) => await testCalculateQuantities(params),
@@ -51,20 +53,19 @@ describe('utils/calculateQuantities()', () => {
 
   describe('2+1 promotion', () => {
     it.each`
-      quantity | promoStock | baseStock | buy  | get  | confirmStock | confirmPromo | confirmBase | expectedPromo | expectedBase
-      ${1}     | ${6}       | ${2}      | ${2} | ${1} | ${null}      | ${null}      | ${'Y'}      | ${0}          | ${1}
-      ${1}     | ${6}       | ${2}      | ${2} | ${1} | ${null}      | ${null}      | ${'N'}      | ${0}          | ${0}
-      ${2}     | ${6}       | ${2}      | ${2} | ${1} | ${null}      | ${'Y'}       | ${null}     | ${3}          | ${0}
-      ${2}     | ${6}       | ${2}      | ${2} | ${1} | ${null}      | ${'N'}       | ${'Y'}      | ${0}          | ${2}
-      ${3}     | ${6}       | ${2}      | ${2} | ${1} | ${null}      | ${null}      | ${null}     | ${3}          | ${0}
-      ${4}     | ${6}       | ${2}      | ${2} | ${1} | ${null}      | ${null}      | ${'Y'}      | ${3}          | ${1}
-      ${5}     | ${6}       | ${2}      | ${2} | ${1} | ${null}      | ${'Y'}       | ${null}     | ${6}          | ${0}
-      ${5}     | ${6}       | ${2}      | ${2} | ${1} | ${null}      | ${'N'}       | ${'Y'}      | ${3}          | ${2}
-      ${6}     | ${6}       | ${2}      | ${2} | ${1} | ${null}      | ${null}      | ${null}     | ${6}          | ${0}
-      ${7}     | ${6}       | ${2}      | ${2} | ${1} | ${null}      | ${null}      | ${'Y'}      | ${6}          | ${1}
-      ${8}     | ${6}       | ${2}      | ${2} | ${1} | ${null}      | ${null}      | ${'Y'}      | ${6}          | ${2}
-      ${9}     | ${6}       | ${2}      | ${2} | ${1} | ${8}         | ${null}      | ${'Y'}      | ${6}          | ${2}
-      ${10}    | ${6}       | ${2}      | ${2} | ${1} | ${8}         | ${null}      | ${'Y'}      | ${6}          | ${2}
+      quantity | promoStock | baseStock | buy  | get  | confirmExcessBaseStock | confirmPromo | confirmBase | expectedPromo | expectedBase
+      ${1}     | ${6}       | ${2}      | ${2} | ${1} | ${null}                | ${null}      | ${'Y'}      | ${0}          | ${1}
+      ${1}     | ${6}       | ${2}      | ${2} | ${1} | ${null}                | ${null}      | ${'N'}      | ${0}          | ${0}
+      ${2}     | ${6}       | ${2}      | ${2} | ${1} | ${null}                | ${'Y'}       | ${null}     | ${3}          | ${0}
+      ${2}     | ${6}       | ${2}      | ${2} | ${1} | ${null}                | ${'N'}       | ${'Y'}      | ${0}          | ${2}
+      ${3}     | ${6}       | ${2}      | ${2} | ${1} | ${null}                | ${null}      | ${null}     | ${3}          | ${0}
+      ${4}     | ${6}       | ${2}      | ${2} | ${1} | ${null}                | ${null}      | ${'Y'}      | ${3}          | ${1}
+      ${5}     | ${6}       | ${2}      | ${2} | ${1} | ${null}                | ${'Y'}       | ${null}     | ${6}          | ${0}
+      ${5}     | ${6}       | ${2}      | ${2} | ${1} | ${null}                | ${'N'}       | ${'Y'}      | ${3}          | ${2}
+      ${6}     | ${6}       | ${2}      | ${2} | ${1} | ${null}                | ${null}      | ${null}     | ${6}          | ${0}
+      ${7}     | ${6}       | ${2}      | ${2} | ${1} | ${null}                | ${null}      | ${'Y'}      | ${6}          | ${1}
+      ${8}     | ${6}       | ${2}      | ${2} | ${1} | ${null}                | ${null}      | ${'Y'}      | ${6}          | ${2}
+      ${8}     | ${7}       | ${1}      | ${2} | ${1} | ${'Y'}                 | ${null}      | ${'Y'}      | ${6}          | ${1}
     `(
       'should calculate quantities with quantity=$quantity, buy=$buy, get=$get',
       async (params) => await testCalculateQuantities(params),
@@ -73,11 +74,11 @@ describe('utils/calculateQuantities()', () => {
 
   describe('1+1 promotion', () => {
     it.each`
-      quantity | promoStock | baseStock | buy  | get  | confirmStock | confirmPromo | confirmBase | expectedPromo | expectedBase
-      ${2}     | ${3}       | ${2}      | ${1} | ${1} | ${null}      | ${null}      | ${null}     | ${2}          | ${0}
-      ${1}     | ${3}       | ${2}      | ${1} | ${1} | ${null}      | ${'Y'}       | ${null}     | ${2}          | ${0}
-      ${1}     | ${3}       | ${2}      | ${1} | ${1} | ${null}      | ${'N'}       | ${'Y'}      | ${0}          | ${1}
-      ${3}     | ${3}       | ${2}      | ${1} | ${1} | ${null}      | ${null}      | ${'Y'}      | ${2}          | ${1}
+      quantity | promoStock | baseStock | buy  | get  | confirmExcessBaseStock | confirmPromo | confirmBase | expectedPromo | expectedBase
+      ${2}     | ${3}       | ${2}      | ${1} | ${1} | ${null}                | ${null}      | ${null}     | ${2}          | ${0}
+      ${1}     | ${3}       | ${2}      | ${1} | ${1} | ${null}                | ${'Y'}       | ${null}     | ${2}          | ${0}
+      ${1}     | ${3}       | ${2}      | ${1} | ${1} | ${null}                | ${'N'}       | ${'Y'}      | ${0}          | ${1}
+      ${3}     | ${3}       | ${2}      | ${1} | ${1} | ${null}                | ${null}      | ${'Y'}      | ${2}          | ${1}
     `(
       'should calculate quantities with quantity=$quantity, buy=$buy, get=$get',
       async (params) => await testCalculateQuantities(params),
