@@ -1,4 +1,9 @@
 class Product {
+  /** @type {string} */ name;
+  /** @type {number} */ price;
+  /** @type {number} */ quantity;
+  /** @type {string|null} */ promotion;
+
   /**
    * @param {string} name - 상품명
    * @param {number} price - 상품 가격

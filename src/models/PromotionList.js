@@ -2,11 +2,7 @@ import getDataFromFile from '../utils/getDataFromFile.js';
 import Promotion from './Promotion.js';
 
 class PromotionList {
-  /**
-   * 프로모션 데이터를 저장하는 Map 객체
-   * @type {Map<string, Promotion>}
-   */
-  promotions;
+  /** @type {Map<string, Promotion>} */ promotions;
 
   constructor() {
     this.promotions = new Map();

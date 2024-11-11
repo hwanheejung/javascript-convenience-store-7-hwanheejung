@@ -5,6 +5,10 @@ import OutputView from '../views/OutputView.js';
 import Receipt from './ReceiptController.js';
 
 class Cashier {
+  /** @type {Stock} */ stock;
+  /** @type {PromotionList} */ promotionList;
+  /** @type {Receipt} */ receipt;
+
   constructor(stock, promotionList) {
     this.stock = stock;
     this.promotionList = promotionList;

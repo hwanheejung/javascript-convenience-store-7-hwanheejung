@@ -1,6 +1,12 @@
 import { DateTimes } from '@woowacourse/mission-utils';
 
 class Promotion {
+  /** @type {string} */ name;
+  /** @type {number} */ buy;
+  /** @type {number} */ get;
+  /** @type {Date} */ startDate;
+  /** @type {Date} */ endDate;
+
   /**
    * @param {string} name - 프로모션 이름
    * @param {number} buy - 프로모션 적용을 위한 최소 구매 수량

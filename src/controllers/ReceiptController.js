@@ -1,23 +1,23 @@
 import OutputView from '../views/OutputView.js';
 
 class Receipt {
-  /**
-   * @property {Object} receiptData - 영수증 데이터
-   * @property {Array<{ name: string, quantity: number, price: number }>} receiptData.items - 구매한 상품의 이름, 수량, 금액 정보를 담은 배열
-   * @property {number} receiptData.totalPrice - 구매한 상품의 총 금액
-   * @property {number} receiptData.promotionDiscount - 프로모션에 따른 할인 금액
-   * @property {number} receiptData.membershipDiscount - 멤버십 할인 금액
-   * @property {number} receiptData.finalPrice - 최종 결제 금액 (총 금액 - 프로모션 할인 - 멤버십 할인)
-   * @property {Array<{ name: string, freeQuantity: number }>} receiptData.freeItems - 증정된 상품의 이름과 수량을 담은 배열
-   */
-  receiptData = {
-    items: [],
-    totalPrice: 0,
-    promotionDiscount: 0,
-    membershipDiscount: 0,
-    finalPrice: 0,
-    freeItems: [],
-  };
+  /** @type {Array<{ name: string, quantity: number, price: number }>} */
+  items = [];
+
+  /** @type {number} */
+  totalPrice = 0;
+
+  /** @type {number} */
+  promotionDiscount = 0;
+
+  /** @type {number} */
+  membershipDiscount = 0;
+
+  /** @type {number} */
+  finalPrice = 0;
+
+  /** @type {Array<{ name: string, freeQuantity: number }>} */
+  freeItems = [];
 
   constructor() {
     this.receiptData = {

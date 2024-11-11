@@ -3,6 +3,9 @@ import PromotionList from './models/PromotionList.js';
 import Stock from './models/Stock.js';
 
 class App {
+  /** @type {Stock} */ stock;
+  /** @type {PromotionList} */ promotionList;
+
   constructor() {
     this.stock = new Stock();
     this.promotionList = new PromotionList();

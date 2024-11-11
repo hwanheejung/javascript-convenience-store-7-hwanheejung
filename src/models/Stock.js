@@ -2,11 +2,7 @@ import Product from './Product.js';
 import getDataFromFile from '../utils/getDataFromFile.js';
 
 class Stock {
-  /**
-   * 상품 데이터를 저장하는 Map 객체
-   * @type {Map<string, { base: Product|null, promotion: Product|null }>}
-   */
-  products;
+  /**  @type {Map<string, { base: Product|null, promotion: Product|null }>} */ products;
 
   constructor() {
     this.products = new Map();
