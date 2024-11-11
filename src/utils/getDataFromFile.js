@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import dirname from './dirname.cjs';
+import dirname from '../config/dirname.cjs';
 
 const getDataFromFile = (pathName) => {
   const { __dirname } = dirname;

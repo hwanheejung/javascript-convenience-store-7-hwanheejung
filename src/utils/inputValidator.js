@@ -45,5 +45,9 @@ const validateQuantity = (quantity, availableQuantity) => {
     Console.print(ERROR.EXCEEDS_STOCK_QUANTITY);
     return false;
   }
+  if (Number(quantity) <= 0) {
+    Console.print(ERROR.MINIMUM_QUANTITY_REQUIRED);
+    return false;
+  }
   return true;
 };

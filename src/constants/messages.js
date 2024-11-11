@@ -18,6 +18,7 @@ export const ERROR = Object.freeze({
   INVALID_PRODUCT_FORMAT:
     '[ERROR] 올바른 형식으로 입력해 주세요. (예: [사이다-2],[감자칩-1])',
   EXCEEDS_STOCK_QUANTITY: `[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.`,
+  MINIMUM_QUANTITY_REQUIRED: `[ERROR] 상품을 하나 이상 구매해주세요. 다시 입력해 주세요.`,
   PRODUCT_NOT_FOUND: (name) =>
     `[ERROR] ${name}은(는) 존재하지 않는 상품입니다.`,
 });
